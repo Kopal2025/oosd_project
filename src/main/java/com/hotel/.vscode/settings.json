@@ -1,0 +1,13 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:/javafx-sdk-21/lib/*.jar"
+    ],
+    "java.project.sourcePaths": [
+        "src/main/java"
+    ],
+    "java.project.resourcePaths": [
+        "src/main/resources"
+    ],
+    "files.encoding": "utf8"
+}
