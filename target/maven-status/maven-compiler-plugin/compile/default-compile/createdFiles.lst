@@ -9,6 +9,7 @@ com\hotel\ui\RoomTab$4.class
 com\hotel\ui\BookingTab.class
 com\hotel\ui\CustomerTab$1.class
 com\hotel\ui\RoomTab$3.class
+com\hotel\ui\LoginView.class
 com\hotel\ui\BillingTab$1.class
 com\hotel\dao\HotelManager.class
 com\hotel\ui\MainApp.class

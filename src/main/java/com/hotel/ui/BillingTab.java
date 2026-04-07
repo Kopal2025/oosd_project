@@ -86,13 +86,49 @@ public class BillingTab extends BorderPane {
         tableCard.setFillWidth(true);
         VBox.setVgrow(table, Priority.ALWAYS);
 
-        setLeft(left);
-        setCenter(tableCard);
+        VBox root = new VBox(20);
+root.getStyleClass().add("page-background");
+
+title.getStyleClass().add("page-title");
+
+Label subtitle = new Label("View revenue and booking insights");
+subtitle.getStyleClass().add("page-subtitle");
+
+// ── STATS CARD ─────────────────────
+HBox statsRow = new HBox(20);
+
+VBox revenueCard = new VBox(8,
+        new Label("Total Revenue"),
+        revenueLabel
+);
+revenueCard.getStyleClass().add("card");
+
+VBox occupancyCard = new VBox(8,
+        new Label("Occupancy Rate"),
+        occupancyLabel
+);
+occupancyCard.getStyleClass().add("card");
+
+statsRow.getChildren().addAll(revenueCard, occupancyCard);
+
+// ── TABLE CARD ─────────────────────
+
+tableCard.getStyleClass().add("card");
+
+// ── FINAL LAYOUT ───────────────────
+root.getChildren().addAll(
+        title,
+        subtitle,
+        statsRow,
+        tableCard
+);
+
+setCenter(root);
         
         refresh();
     }
 
-    private void refresh() {
+    public void refresh() {
         table.setItems(FXCollections.observableArrayList(manager.getAllBookings()));
         revenueLabel.setText(String.format("Rs %.2f", manager.getTotalRevenue()));
         occupancyLabel.setText(String.format("%.2f%%", manager.getOccupancyRate()));

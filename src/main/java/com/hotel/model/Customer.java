@@ -61,6 +61,10 @@ public class Customer implements Serializable {
         this.address = address;
     }
 
+   public static void setCounter(int value) {
+    idCounter = value;
+}
+
     @Override
     public String toString() {
         return "[" + customerId + "] " + name + " | " + phone;

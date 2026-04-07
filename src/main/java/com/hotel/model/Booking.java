@@ -113,6 +113,10 @@ public String generateInvoice() {
         this.active = active;
     }
 
+    public static void setCounter(int value) {
+    bookingCounter = value;
+}
+
     @Override
     public String toString() {
         return "Booking #" + bookingId

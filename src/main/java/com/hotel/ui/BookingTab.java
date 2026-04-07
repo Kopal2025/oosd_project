@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import java.time.LocalDate;
 
-public class BookingTab extends VBox {
+public class BookingTab extends BorderPane {
 
     private HotelManager manager;
     private ComboBox<Room> roomBox;
@@ -25,7 +25,6 @@ public class BookingTab extends VBox {
     }
 
     private void setupUI() {
-        setSpacing(15);
         setPadding(new Insets(20));
         setStyle("-fx-background-color: #f1f5f9;");
 
@@ -59,9 +58,16 @@ public class BookingTab extends VBox {
 
         messageLabel = new Label();
 
-        HBox buttonBox = new HBox(10, bookBtn, checkoutBtn);
+       Button refreshBtn = new Button("Refresh");
+refreshBtn.setStyle("-fx-background-color: #64748b; -fx-text-fill: white; -fx-padding: 10 20;");
+
+HBox buttonBox = new HBox(10, bookBtn, checkoutBtn, refreshBtn);
+refreshBtn.setOnAction(e -> refreshBoxes());
+refreshBtn.setOnMouseEntered(e -> refreshBtn.setStyle("-fx-background-color: #475569; -fx-text-fill: white;"));
+refreshBtn.setOnMouseExited(e -> refreshBtn.setStyle("-fx-background-color: #64748b; -fx-text-fill: white;"));
 
         getChildren().addAll(title, roomBox, customerBox, checkIn, checkOut, priceLabel, buttonBox, messageLabel);
+        this.setOnMouseEntered(e -> refreshBoxes());
 
         refreshBoxes();
 
@@ -70,11 +76,43 @@ public class BookingTab extends VBox {
         checkOut.setOnAction(e -> updatePrice());
 
         bookBtn.setOnAction(e -> bookRoom());
-        checkoutBtn.setOnAction(e -> doCheckout());
+        checkoutBtn.setOnAction(ev -> doCheckout());
+
+        VBox root = new VBox(20);
+root.getStyleClass().add("page-background");
+
+title.getStyleClass().add("page-title");
+
+Label subtitle = new Label("Book and manage room reservations");
+subtitle.getStyleClass().add("page-subtitle");
+
+// ── FORM CARD ─────────────────────────
+VBox formCard = new VBox(12);
+formCard.getStyleClass().add("card");
+
+formCard.getChildren().addAll(
+        new Label("New Booking"),
+        roomBox,
+        customerBox,
+        checkIn,
+        checkOut,
+        priceLabel,
+        buttonBox,
+        messageLabel
+);
+
+// ── MAIN LAYOUT ───────────────────────
+root.getChildren().addAll(
+        title,
+        subtitle,
+        formCard
+);
+
+setCenter(root);
     }
 
-    private void refreshBoxes() {
-        roomBox.setItems(FXCollections.observableArrayList(manager.getAvailableRooms()));
+    public void refreshBoxes() {
+        roomBox.setItems(FXCollections.observableArrayList(manager.getAllRooms()));
         customerBox.setItems(FXCollections.observableArrayList(manager.getAllCustomers()));
     }
 
@@ -113,6 +151,8 @@ public class BookingTab extends VBox {
             alert.showAndWait();
             refreshBoxes();
             clearForm();
+            MainApp.dashboardTab.refresh();
+MainApp.billingTab.refresh();
         } else {
             messageLabel.setText(result);
         }
@@ -133,8 +173,12 @@ public class BookingTab extends VBox {
             alert.setTitle("Invoice");
             alert.setContentText(result.substring(8));
             alert.showAndWait();
-            refreshBoxes();
-            clearForm();
+            roomBox.getItems().clear();
+roomBox.setItems(FXCollections.observableArrayList(manager.getAllRooms()));
+MainApp.dashboardTab.refresh();
+MainApp.billingTab.refresh();
+MainApp.roomTabInstance.refreshTable();
+clearForm();
         } else {
             messageLabel.setText(result);
         }

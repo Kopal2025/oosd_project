@@ -119,8 +119,36 @@ public class CustomerTab extends BorderPane {
         centerCard.getChildren().addAll(searchField, table);
         VBox.setVgrow(table, Priority.ALWAYS);
 
-        setLeft(form);
-        setCenter(centerCard);
+        VBox root = new VBox(20);
+root.getStyleClass().add("page-background");
+
+Label subtitle = new Label("Manage customer records");
+subtitle.getStyleClass().add("page-subtitle");
+
+// Wrap form in proper card
+VBox formCard = new VBox(12);
+formCard.getStyleClass().add("card");
+formCard.setMaxWidth(500);
+formCard.getChildren().addAll(
+        new Label("Add Customer"),
+        nameField, phoneField, emailField, addressField, addBtn, message
+);
+
+// Table card already exists → reuse
+VBox tableCard = new VBox(12);
+tableCard.getStyleClass().add("card");
+tableCard.getChildren().addAll(searchField, table);
+VBox.setVgrow(table, Priority.ALWAYS);
+
+// Layout like RoomTab
+root.getChildren().addAll(
+        title,
+        subtitle,
+        formCard,
+        tableCard
+);
+
+setCenter(root);
     }
 
     private void refreshTable() {

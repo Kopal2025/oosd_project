@@ -77,22 +77,45 @@
 
 /* ── Cards ──────────────────────────────── */
 .card {
-    -fx-background-color: white;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-padding: 18;
+    -fx-border-radius: 16;
     -fx-border-color: #e2e8f0;
     -fx-border-width: 1;
-    -fx-padding: 18;
+
+    /* ✨ shadow */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 20, 0, 0, 4);
 }
 
 .stat-card {
     -fx-background-color: white;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
-    -fx-border-color: #e2e8f0;
-    -fx-border-width: 1;
+    -fx-background-radius: 16;
     -fx-padding: 18;
-    -fx-min-width: 140;
+    -fx-spacing: 10;
+
+    -fx-min-width: 150;
+    -fx-pref-width: 170;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 18, 0, 0, 4);
+}
+
+.stat-card .label {
+    -fx-wrap-text: true !important;
+}
+
+.stat-number {
+    -fx-font-size: 16px !important;
+    -fx-font-weight: bold;
+}
+
+.stat-card .label {
+    -fx-font-size: 11px !important;
+}
+
+.stat-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 13px;
 }
 
 .mini-card {
@@ -438,4 +461,20 @@
 .chart-pie-label {
     -fx-fill: #334155;
     -fx-font-size: 11px;
+}
+
+.stat-card .label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+}
+
+.stat-card .text {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.stat-title {
+    -fx-font-size: 12px;   /* reduce from big value */
+    -fx-font-weight: 600;
+    -fx-text-fill: #64748b;
 }

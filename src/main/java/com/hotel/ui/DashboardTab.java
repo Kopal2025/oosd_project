@@ -16,6 +16,9 @@ public class DashboardTab extends BorderPane {
 
     private final HotelManager manager;
     private Label revenueLabel;
+    private Label totalRoomsLabel;
+private Label availableLabel;
+private Label bookedLabel;
     private Timeline refreshTimer;
 
     public DashboardTab(HotelManager manager) {
@@ -38,20 +41,20 @@ public class DashboardTab extends BorderPane {
         subtitle.getStyleClass().add("page-subtitle");
 
         // ── Stats Row ───────────────────────
-        HBox statsRow = new HBox(16);
+        HBox statsRow = new HBox(20);
         statsRow.setAlignment(Pos.CENTER_LEFT);
 
-        VBox totalCard = makeStatCard("🏢",
-                String.valueOf(manager.getTotalRooms()),
-                "Total Rooms", "accent-indigo");
+        totalRoomsLabel = new Label(String.valueOf(manager.getTotalRooms()));
+VBox totalCard = makeDynamicStatCard("🏢",
+        totalRoomsLabel, "Total Rooms", "accent-indigo");
 
-        VBox availCard = makeStatCard("🟢",
-                String.valueOf(manager.getAvailableRoomsCount()),
-                "Available", "accent-green");
+        availableLabel = new Label(String.valueOf(manager.getAvailableRoomsCount()));
+VBox availCard = makeDynamicStatCard("🟢",
+        availableLabel, "Available", "accent-green");
 
-        VBox bookedCard = makeStatCard("🔴",
-                String.valueOf(manager.getBookedRoomsCount()),
-                "Booked", "accent-red");
+        bookedLabel = new Label(String.valueOf(manager.getBookedRoomsCount()));
+VBox bookedCard = makeDynamicStatCard("🔴",
+        bookedLabel, "Booked", "accent-red");
 
         revenueLabel = new Label(String.format("₹%.0f", manager.getTotalRevenue()));
         VBox revenueCard = makeDynamicStatCard("💰",
@@ -64,12 +67,21 @@ public class DashboardTab extends BorderPane {
         statsRow.getChildren().addAll(
                 totalCard, availCard, bookedCard, revenueCard, bookingsCard
         );
+        HBox.setHgrow(totalCard, Priority.ALWAYS);
+HBox.setHgrow(availCard, Priority.ALWAYS);
+HBox.setHgrow(bookedCard, Priority.ALWAYS);
+HBox.setHgrow(revenueCard, Priority.ALWAYS);
+HBox.setHgrow(bookingsCard, Priority.ALWAYS);
+statsRow.setFillHeight(true);
+
 
         // ── Occupancy ───────────────────────
         VBox occupancyBox = createOccupancyCard();
 
         // ── Charts ──────────────────────────
         HBox chartsRow = new HBox(20);
+        chartsRow.getStyleClass().add("card");
+chartsRow.setPadding(new Insets(20));
 
         PieChart pieChart = createRoomTypeChart();
         VBox revenueBreakdown = createRevenueBreakdown();
@@ -99,12 +111,17 @@ public class DashboardTab extends BorderPane {
     private VBox makeStatCard(String icon, String number, String label, String accentClass) {
         VBox card = new VBox(8);
         card.getStyleClass().addAll("card", "stat-card");
+        card.setPrefWidth(150);
+card.setMaxWidth(Double.MAX_VALUE);
 
         Label iconLabel = new Label(icon);
         Label numLabel = new Label(number);
         numLabel.getStyleClass().add(accentClass);
-
-        Label labelText = new Label(label);
+Label labelText = new Label(label);
+labelText.setMaxWidth(Double.MAX_VALUE);
+labelText.setWrapText(true);
+VBox.setVgrow(labelText, Priority.ALWAYS);
+        iconLabel.setStyle("-fx-font-size: 18px;");
 
         card.getChildren().addAll(iconLabel, numLabel, labelText);
         return card;
@@ -113,11 +130,17 @@ public class DashboardTab extends BorderPane {
     private VBox makeDynamicStatCard(String icon, Label dynamicLabel, String label, String accentClass) {
         VBox card = new VBox(8);
         card.getStyleClass().addAll("card", "stat-card");
+        card.setPrefWidth(150);
+card.setMaxWidth(Double.MAX_VALUE);
 
         Label iconLabel = new Label(icon);
         dynamicLabel.getStyleClass().add(accentClass);
 
         Label labelText = new Label(label);
+labelText.setMaxWidth(Double.MAX_VALUE);
+labelText.setWrapText(true);
+VBox.setVgrow(labelText, Priority.ALWAYS);
+        iconLabel.setStyle("-fx-font-size: 18px;");
 
         card.getChildren().addAll(iconLabel, dynamicLabel, labelText);
         return card;
@@ -128,7 +151,7 @@ public class DashboardTab extends BorderPane {
 
         double occupancy = manager.getOccupancyRate();
 
-        Label percentLabel = new Label(String.format("%.1f%%", occupancy));
+        Label percentLabel = new Label("Occupancy: " + String.format("%.1f%%", occupancy));
         ProgressBar progressBar = new ProgressBar(occupancy / 100.0);
 
         card.getChildren().addAll(percentLabel, progressBar);
@@ -159,7 +182,7 @@ private PieChart createRoomTypeChart() {
 
 private VBox createRevenueBreakdown() {
     VBox box = new VBox(10);
-    box.setStyle("-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 10;");
+   box.getStyleClass().add("card");
     
     Label title = new Label("Revenue by Room Type");
     title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
@@ -199,7 +222,7 @@ private VBox createRevenueBreakdown() {
 
 private VBox createRecentBookingsBox() {
     VBox box = new VBox(10);
-    box.setStyle("-fx-padding: 15; -fx-background-color: white; -fx-background-radius: 10;");
+    box.getStyleClass().add("card");
     
     Label title = new Label("Recent Bookings");
     title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
@@ -234,16 +257,32 @@ private VBox createRecentBookingsBox() {
         box.getChildren().add(item);
     }
     
-    return box;
+    ScrollPane scroll = new ScrollPane(box);
+scroll.setFitToWidth(true);
+scroll.setPrefHeight(700); // adjust height if needed
+
+return new VBox(scroll);
 }
 
-    private void setupAutoRefresh(Label revenueLabel, VBox occupancyBox) {
-        refreshTimer = new Timeline(new KeyFrame(Duration.seconds(10), e -> {
-            revenueLabel.setText(
-                    String.format("₹%.0f", manager.getTotalRevenue())
-            );
-        }));
+    public void setupAutoRefresh(Label revenueLabel, VBox occupancyBox) {
+        refreshTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+
+    // ✅ YOUR DEBUG / UPDATE GOES HERE
+    System.out.println("Rooms: " + manager.getAllRooms().size());
+    System.out.println("Bookings: " + manager.getAllBookings().size());
+
+    revenueLabel.setText(String.format("₹%.0f", manager.getTotalRevenue()));
+
+    totalRoomsLabel.setText(String.valueOf(manager.getTotalRooms()));
+    availableLabel.setText(String.valueOf(manager.getAvailableRoomsCount()));
+    bookedLabel.setText(String.valueOf(manager.getBookedRoomsCount()));
+
+}));
         refreshTimer.setCycleCount(Timeline.INDEFINITE);
         refreshTimer.play();
     }
+
+    public void refresh() {
+    setCenter(buildUI());
+}
 }

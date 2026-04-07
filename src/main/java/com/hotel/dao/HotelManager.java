@@ -17,6 +17,20 @@ public class HotelManager {
         bookings = DataStore.loadBookings();
         activeBookings = new HashMap<>();
 
+        int maxId = customers.stream()
+        .mapToInt(Customer::getCustomerId)
+        .max()
+        .orElse(100);
+
+Customer.setCounter(maxId);
+
+int maxBookingId = bookings.stream()
+        .mapToInt(Booking::getBookingId)
+        .max()
+        .orElse(1000);
+
+Booking.setCounter(maxBookingId);
+
         for (Booking b : bookings) {
             if (b.isActive()) {
                 activeBookings.put(b.getRoom().getRoomNumber(), b);
